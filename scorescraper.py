@@ -94,7 +94,6 @@ def getcbbthread(urlname,secret,token):
 #	print subreddit, '\n', title , '\n' , body
 
 	r = praw.Reddit('GameThreadGenerator')
-#	r.login('airjesse', 'Calee55')
 	r.set_oauth_app_info(client_id='toi-mfvVqbptkA',client_secret=secret,redirect_uri='http://127.0.0.1:65010/authorize_callback')
 	r.refresh_access_information(token)
 	r.submit(subreddit,title,body)
@@ -108,43 +107,3 @@ def postupcoming(url,secret,token):
 	for index, row in df2.iterrows():
 		scorescraper.getcbbthread(row['urls'],secret,token)
 
-def getcfbthread(urlname):
-	from lxml import html
-	import requests 
-	import praw
-	page = requests.get('http://sports.yahoo.com'+urlname)
-	page.content2 =  page.content.replace("\\", "")
-	tree=html.fromstring(page.content2) 
-
-	VisitingTeamName = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="name"]/a/text()')[0]
-	VisitingTeamRecord = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="rank"]/text()')[0]
-	#VisitingTeamLogo = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="rank"]/text()')[0]
-	HomeTeamName = tree.xpath('//div[@class="team home"]/div[@class="team-info"]/div[@class="name"]/a/text()')[0]
-	HomeTeamRecord = tree.xpath('//div[@class="team home"]/div[@class="team-info"]/div[@class="rank"]/text()')[0]
-	#HomeTeamLogo = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="rank"]/text()')[0]
-	DateTime = tree.xpath('//li[@class="status"]/text()')[0]
-	Stadium = tree.xpath('//li[@class="stadium"]/span/text()')[0]
-	TV = tree.xpath('//li[@class="left"]/ul/li/text()')[0]
-	try:
-		OddsFavorite = tree.xpath('//li[@class="odds-ps-name\"]/text()')[0]
-	except:
-		OddsFavorite = 'Odds'
-	try:
-		OddsSpread = tree.xpath('//li[@class="odds-ps"]/text()')[0]
-	except:
-		OddsSpread = 'not yet set'
-
-	subreddit = 'bottesting'
-	title = '[Game Thread] ' + VisitingTeamName+' '+VisitingTeamRecord+' at '+HomeTeamName+' '+HomeTeamRecord+'('+DateTime+')'
-	body = '###'+VisitingTeamName+' '+VisitingTeamRecord+' at '+HomeTeamName+' '+HomeTeamRecord  \
-	+ '\n' + ' ' + '\n' +  '***' + '\n' +  ' ' 	+ '\n' +  ' | Details'	+ '\n' +  '--:|:--' \
-	+ '\n' +  '**Time** | '+DateTime + '\n' +  '**Location** | '+Stadium + '\n' +  '**Watch** | **TV:** '+TV[4:] \
-	+ '\n' +  '**Odds** | '+OddsFavorite+' '+OddsSpread	 + '\n' +  '**Follow** | [Yahoo!](http://sports.yahoo.com'+urlname+')'
-	
-#	print subreddit, '\n', title , '\n' , body
-	
-#	r = praw.Reddit('PRAW related-question monitor by u/_Daimon_ v 1.0.'
-#	'Url: https://praw.readthedocs.org/en/latest/'
-#	'pages/writing_a_bot.html')
-#	r.login('airjesse', 'Calee55')
-#	r.submit(subreddit,title,body)
