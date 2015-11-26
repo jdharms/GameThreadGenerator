@@ -87,8 +87,8 @@ def getcbbthread(urlname,secret,token):
 	+ '\n' +  '-----------------------------------------------------------------' + '\n' +  ' ' \
 	+ '\n' +  '**Television:** ' + '\n' +  TV[4:] + '\n' +  ' ' + '\n' +  '**Streams:** ' \
 	+ '\n' +  '[IsTheGameOn?](http://isthegameon.com/)' + '\n' +  ' ' \
-	+ '\n' +  '**Radio:** ' + '\n' +  '[' + VisitingRedditName + '](http://http://tunein.com' + VisitingRadioURL + ')' + '\n'  +  ' ' \
-	+ '  [' + HomeRedditName + '](http://http://tunein.com' + HomeRadioURL + ')' + '\n'  +  ' ' \
+	+ '\n' +  '**Radio:** ' + '\n' +  '[' + VisitingRedditName + '](http://tunein.com' + VisitingRadioURL + ')' + '\n'  +  ' ' \
+	+ '  [' + HomeRedditName + '](http://tunein.com' + HomeRadioURL + ')' + '\n'  +  ' ' \
 	+ '\n' +  '**Preview/Follow:**' + '\n' +  '[Yahoo!](http://sports.yahoo.com'+urlname+')' \
 	+ '\n' +  ' '  + '\n' +  '**Odds**'  + '\n' +  ' '	 \
 	+ '\n' +  '**Favorite:** ' + OddsFavorite + '\n' +  ' '	+ '\n' +  '**Game Line:** '+OddsSpread \
@@ -103,12 +103,12 @@ def getcbbthread(urlname,secret,token):
 	+ '\n' + '\n' + '- Show your team affiliation - get a team logo by clicking edit in the column on the right  ' 
 
 	
-	print subreddit, '\n', title , '\n' , body
+#	print subreddit, '\n', title , '\n' , body
 
-#	r = praw.Reddit('GameThreadGenerator')
-#	r.set_oauth_app_info(client_id='toi-mfvVqbptkA',client_secret=secret,redirect_uri='http://127.0.0.1:65010/authorize_callback')
-#	r.refresh_access_information(token)
-#	r.submit(subreddit,title,body)
+	r = praw.Reddit('GameThreadGenerator')
+	r.set_oauth_app_info(client_id='toi-mfvVqbptkA',client_secret=secret,redirect_uri='http://127.0.0.1:65010/authorize_callback')
+	r.refresh_access_information(token)
+	r.submit(subreddit,title,body)
 
 def postupcoming(url,secret,token):
 	import scorescraper
