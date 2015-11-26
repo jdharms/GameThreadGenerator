@@ -103,7 +103,7 @@ def postupcoming(url,secret,token):
 	import pandas as pd
 	(timedeltas,urls) = scorescraper.getgametimes(url)
 	df = pd.DataFrame({'timedeltas': timedeltas, 'urls': urls})
-	df2 = df[df['timedeltas'].between(0,2400)]
+	df2 = df[df['timedeltas'].between(50,60)]
 	for index, row in df2.iterrows():
 		scorescraper.getcbbthread(row['urls'],secret,token)
 
