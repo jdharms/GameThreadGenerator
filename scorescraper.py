@@ -36,6 +36,10 @@ def getcbbthread(urlname,secret,token):
 		VisitingRedditName = df[df[1]==VisitingYahooName].iloc[0][2]
 	except:
 		VisitingRedditName = ''
+	try:
+		VisitingRadioURL = df[df[1]==VisitingYahooName].iloc[0][4]
+	except:
+		VisitingRadioURL = 'NA'
 	VisitingTeamRecord = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="rank"]/text()')[0]
 	VisitingTeamLogo = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="rank"]/text()')[0]
 	HomeTeamName = tree.xpath('//div[@class="team home"]/div[@class="team-info"]/div[@class="name"]/a/text()')[0]
@@ -44,6 +48,10 @@ def getcbbthread(urlname,secret,token):
 		HomeRedditName = df[df[1]==HomeYahooName].iloc[0][2]
 	except:
 		HomeRedditName = ''
+	try:
+		HomeRadioURL = df[df[1]==HomeYahooName].iloc[0][4]
+	except:
+		HomeRadioURL = 'NA'
 	HomeTeamRecord = tree.xpath('//div[@class="team home"]/div[@class="team-info"]/div[@class="rank"]/text()')[0]
 	HomeTeamLogo = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="rank"]/text()')[0]
 	DateTime = tree.xpath('//li[@class="status"]/text()')[0][12:100]
