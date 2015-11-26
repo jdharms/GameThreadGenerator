@@ -28,7 +28,7 @@ def getcbbthread(urlname,secret,token):
 	page = requests.get('http://sports.yahoo.com'+urlname)
 	page.content2 =  page.content.replace("\\", "")
 	tree=html.fromstring(page.content2) 
-	df=pd.read_csv('/Users/jesseunger/Dropbox/GameThreadGenerator/TeamLookup.csv', sep=',',header=None)
+	df=pd.read_csv('/home/ubuntu/GameThreadGenerator/TeamLookup.csv', sep=',',header=None)
 
 	VisitingTeamName = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="name"]/a/text()')[0]
 	VisitingYahooName = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="name"]//@href')[0][13:-1]
