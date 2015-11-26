@@ -57,7 +57,7 @@ def getcbbthread(urlname,secret,token):
 	except:
 		HomeRadioURL = '/radio/College-Basketball-c481303/'
 	try:
-		HomeSubReddit = df[df[1]==VisitingYahooName].iloc[0][5]
+		HomeSubReddit = df[df[1]==HomeYahooName].iloc[0][5]
 	except:
 		HomeSubReddit = ' '
 	HomeTeamRecord = tree.xpath('//div[@class="team home"]/div[@class="team-info"]/div[@class="rank"]/text()')[0]
