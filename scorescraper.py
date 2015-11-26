@@ -39,7 +39,7 @@ def getcbbthread(urlname,secret,token):
 	try:
 		VisitingRadioURL = df[df[1]==VisitingYahooName].iloc[0][4]
 	except:
-		VisitingRadioURL = 'NA'
+		VisitingRadioURL = '/radio/College-Basketball-c481303/'
 	VisitingTeamRecord = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="rank"]/text()')[0]
 	VisitingTeamLogo = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="rank"]/text()')[0]
 	HomeTeamName = tree.xpath('//div[@class="team home"]/div[@class="team-info"]/div[@class="name"]/a/text()')[0]
@@ -51,7 +51,7 @@ def getcbbthread(urlname,secret,token):
 	try:
 		HomeRadioURL = df[df[1]==HomeYahooName].iloc[0][4]
 	except:
-		HomeRadioURL = 'NA'
+		HomeRadioURL = '/radio/College-Basketball-c481303/'
 	HomeTeamRecord = tree.xpath('//div[@class="team home"]/div[@class="team-info"]/div[@class="rank"]/text()')[0]
 	HomeTeamLogo = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="rank"]/text()')[0]
 	DateTime = tree.xpath('//li[@class="status"]/text()')[0][12:100]
@@ -87,6 +87,8 @@ def getcbbthread(urlname,secret,token):
 	+ '\n' +  '-----------------------------------------------------------------' + '\n' +  ' ' \
 	+ '\n' +  '**Television:** ' + '\n' +  TV[4:] + '\n' +  ' ' + '\n' +  '**Streams:** ' \
 	+ '\n' +  '[IsTheGameOn?](http://isthegameon.com/)' + '\n' +  ' ' \
+	+ '\n' +  '**Radio:** ' + '\n' +  '[' + VisitingRedditName + '](http://http://tunein.com' + VisitingRadioURL + ')' + '\n'  +  ' ' \
+	+ '  [' + HomeRedditName + '](http://http://tunein.com' + HomeRadioURL + ')' + '\n'  +  ' ' \
 	+ '\n' +  '**Preview/Follow:**' + '\n' +  '[Yahoo!](http://sports.yahoo.com'+urlname+')' \
 	+ '\n' +  ' '  + '\n' +  '**Odds**'  + '\n' +  ' '	 \
 	+ '\n' +  '**Favorite:** ' + OddsFavorite + '\n' +  ' '	+ '\n' +  '**Game Line:** '+OddsSpread \
@@ -101,12 +103,12 @@ def getcbbthread(urlname,secret,token):
 	+ '\n' + '\n' + '- Show your team affiliation - get a team logo by clicking edit in the column on the right  ' 
 
 	
-#	print subreddit, '\n', title , '\n' , body
+	print subreddit, '\n', title , '\n' , body
 
-	r = praw.Reddit('GameThreadGenerator')
-	r.set_oauth_app_info(client_id='toi-mfvVqbptkA',client_secret=secret,redirect_uri='http://127.0.0.1:65010/authorize_callback')
-	r.refresh_access_information(token)
-	r.submit(subreddit,title,body)
+#	r = praw.Reddit('GameThreadGenerator')
+#	r.set_oauth_app_info(client_id='toi-mfvVqbptkA',client_secret=secret,redirect_uri='http://127.0.0.1:65010/authorize_callback')
+#	r.refresh_access_information(token)
+#	r.submit(subreddit,title,body)
 
 def postupcoming(url,secret,token):
 	import scorescraper
