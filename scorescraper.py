@@ -1,6 +1,7 @@
 def getgametimes(urlname):
 	from lxml import html
 	import requests 
+	import scorescraper
 	from datetime import datetime, timedelta
 	page = requests.get(urlname)
 	page.content2 =  page.content.replace("\\", "")
@@ -13,7 +14,8 @@ def getgametimes(urlname):
 	if not URLs:
 		URLs = tree.xpath('//td[@class="score"]//@href')
 	TimeDeltas = [(datetime.strptime(x, '%I:%M %p')-datetime.utcnow()+timedelta(hours=5)).seconds/60 for x in Time2]
-	return (TimeDeltas,URLs)	
+	TimeDeltas2 = list(scorescraper.rename_duplicates(TimeDeltas))
+	return (TimeDeltas2,URLs)	
 	
 def getcbbthread(urlname,secret,token):
 	from lxml import html
@@ -103,7 +105,7 @@ def postupcoming(url,secret,token):
 	import pandas as pd
 	(timedeltas,urls) = scorescraper.getgametimes(url)
 	df = pd.DataFrame({'timedeltas': timedeltas, 'urls': urls})
-	df2 = df[df['timedeltas'].between(50,60)]
+	df2 = df[df['timedeltas'].between(50,59)]
 	for index, row in df2.iterrows():
 		scorescraper.getcbbthread(row['urls'],secret,token)
 		
