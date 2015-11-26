@@ -40,6 +40,10 @@ def getcbbthread(urlname,secret,token):
 		VisitingRadioURL = df[df[1]==VisitingYahooName].iloc[0][4]
 	except:
 		VisitingRadioURL = '/radio/College-Basketball-c481303/'
+	try:
+		VisitingSubReddit = df[df[1]==VisitingYahooName].iloc[0][5]
+	except:
+		VisitingSubReddit = ' '
 	VisitingTeamRecord = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="rank"]/text()')[0]
 	VisitingTeamLogo = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="rank"]/text()')[0]
 	HomeTeamName = tree.xpath('//div[@class="team home"]/div[@class="team-info"]/div[@class="name"]/a/text()')[0]
@@ -52,6 +56,10 @@ def getcbbthread(urlname,secret,token):
 		HomeRadioURL = df[df[1]==HomeYahooName].iloc[0][4]
 	except:
 		HomeRadioURL = '/radio/College-Basketball-c481303/'
+	try:
+		HomeSubReddit = df[df[1]==VisitingYahooName].iloc[0][5]
+	except:
+		HomeSubReddit = ' '
 	HomeTeamRecord = tree.xpath('//div[@class="team home"]/div[@class="team-info"]/div[@class="rank"]/text()')[0]
 	HomeTeamLogo = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="rank"]/text()')[0]
 	DateTime = tree.xpath('//li[@class="status"]/text()')[0][12:100]
@@ -100,7 +108,8 @@ def getcbbthread(urlname,secret,token):
 	+ '\n' + '\n' + '- Try [Chrome Refresh](https://chrome.google.com/extensions/detail/aifhnlnghddfdaccgbbpbhjfkmncekmn) or Firefoxs [ReloadEvery](https://addons.mozilla.org/en-US/firefox/addon/115/) to auto-refresh this tab.' \
 	+ '\n' + '\n' + '- You may also like [reddit stream](http://www.reddit.com/r/CFB/comments/wn9uj/lets_discuss_game_threads_come_fall/c5esw1u) to keep up with comments. ' \
 	+ '\n' + '\n' + '- [Follow @redditCBB](https://twitter.com/redditCBB) on twitter for news, updates, and bad attempts at humor.' \
-	+ '\n' + '\n' + '- Show your team affiliation - get a team logo by clicking edit in the column on the right  ' 
+	+ '\n' + '\n' + '\n' + '\n' + '**Subscribe to these communities**'  \
+	+ '\n' + '\n' + VisitingSubReddit + ' | ' + HomeSubReddit
 
 	
 #	print subreddit, '\n', title , '\n' , body
