@@ -106,4 +106,15 @@ def postupcoming(url,secret,token):
 	df2 = df[df['timedeltas'].between(50,60)]
 	for index, row in df2.iterrows():
 		scorescraper.getcbbthread(row['urls'],secret,token)
+		
+def rename_duplicates( old ):
+	seen = {}
+	for x in old:
+		if x in seen:
+			seen[x] += 1
+			yield x + 11
+		else:
+			seen[x] = 0
+			yield x
+
 
