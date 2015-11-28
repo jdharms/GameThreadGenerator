@@ -23,13 +23,13 @@ def getcbbthread(urlname,secret,token):
 	import requests 
 	import requests.auth
 	import csv
-	import praw
+	import scorescraper
 	import OAuth2Util
 	page = requests.get('http://sports.yahoo.com'+urlname)
 	page.content2 =  page.content.replace("\\", "")
 	tree=html.fromstring(page.content2) 
 	df1=pd.read_csv('https://raw.githubusercontent.com/airjesse123/GameThreadGenerator/master/TeamLookup.csv', sep=',',header=None)
-	df=df = df1.fillna('')
+	df = df1.fillna('')
 
 	VisitingTeamName = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="name"]/a/text()')[0]
 	VisitingYahooName = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="name"]//@href')[0][13:-1]
@@ -40,11 +40,11 @@ def getcbbthread(urlname,secret,token):
 	try:
 		VisitingRadioURL = df[df[1]==VisitingYahooName].iloc[0][4]
 	except:
-		VisitingRadioURL = '/radio/College-Basketball-c481303/'
+		VisitingRadioURL = ''
 	try:
 		VisitingSubReddit = df[df[1]==VisitingYahooName].iloc[0][5]
 	except:
-		VisitingSubReddit = ' '
+		VisitingSubReddit = ''
 	VisitingTeamRecord = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="rank"]/text()')[0]
 	VisitingTeamLogo = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="rank"]/text()')[0]
 	HomeTeamName = tree.xpath('//div[@class="team home"]/div[@class="team-info"]/div[@class="name"]/a/text()')[0]
@@ -56,13 +56,29 @@ def getcbbthread(urlname,secret,token):
 	try:
 		HomeRadioURL = df[df[1]==HomeYahooName].iloc[0][4]
 	except:
-		HomeRadioURL = '/radio/College-Basketball-c481303/'
+		HomeRadioURL = ''
 	try:
 		HomeSubReddit = df[df[1]==HomeYahooName].iloc[0][5]
 	except:
-		HomeSubReddit = ' '
+		HomeSubReddit = ''
 	HomeTeamRecord = tree.xpath('//div[@class="team home"]/div[@class="team-info"]/div[@class="rank"]/text()')[0]
 	HomeTeamLogo = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="rank"]/text()')[0]
+	if HomeSubReddit=='' and VisitingSubReddit=='':
+		Subreddits = ''
+	elif HomeSubReddit=='' or VisitingSubReddit=='':
+		Subreddits = '\n' + '\n' + '\n' + '\n' + '**Subscribe to these communities**'  \
+		+ '\n' + '\n' + HomeSubReddit + VisitingSubReddit
+	else:
+		Subreddits = 	+ '\n' + '\n' + '\n' + '\n' + '**Subscribe to these communities**'  \
+		+ '\n' + '\n' + VisitingSubReddit + ' | ' + HomeSubReddit
+	if HomeRadioURL == '':
+		HomeRadioName = ''
+	else:
+		HomeRadioName = HomeRedditName
+	if VisitingRadioURL == '':
+		VisitingRadioName = ''
+	else:
+		VisitingRadioName = VisitingRedditName
 	DateTime = tree.xpath('//li[@class="status"]/text()')[0][12:100]
 	Stadium = tree.xpath('//li[@class="stadium"]/span/text()')[0]
 	try:
@@ -96,8 +112,8 @@ def getcbbthread(urlname,secret,token):
 	+ '\n' +  '-----------------------------------------------------------------' + '\n' +  ' ' \
 	+ '\n' +  '**Television:** ' + '\n' +  TV[4:] + '\n' +  ' ' + '\n' +  '**Streams:** ' \
 	+ '\n' +  '[IsTheGameOn?](http://isthegameon.com/)' + '\n' +  ' ' \
-	+ '\n' +  '**Radio:** ' + '\n' +  '[' + VisitingRedditName + '](http://tunein.com' + VisitingRadioURL + ')' + '\n'  +  ' ' \
-	+ '  [' + HomeRedditName + '](http://tunein.com' + HomeRadioURL + ')' + '\n'  +  ' ' \
+	+ '\n' +  '**Radio:** ' + '\n' +  '[' + VisitingRadioName + '](http://tunein.com' + VisitingRadioURL + ')' + '\n'  +  ' ' \
+	+ '  [' + HomeRadioName + '](http://tunein.com' + HomeRadioURL + ')' + '\n'  +  ' ' \
 	+ '\n' +  '**Preview/Follow:**' + '\n' +  '[Yahoo!](http://sports.yahoo.com'+urlname+')' \
 	+ '\n' +  ' '  + '\n' +  '**Odds**'  + '\n' +  ' '	 \
 	+ '\n' +  '**Favorite:** ' + OddsFavorite + '\n' +  ' '	+ '\n' +  '**Game Line:** '+OddsSpread \
@@ -109,16 +125,9 @@ def getcbbthread(urlname,secret,token):
 	+ '\n' + '\n' + '- Try [Chrome Refresh](https://chrome.google.com/extensions/detail/aifhnlnghddfdaccgbbpbhjfkmncekmn) or Firefoxs [ReloadEvery](https://addons.mozilla.org/en-US/firefox/addon/115/) to auto-refresh this tab.' \
 	+ '\n' + '\n' + '- You may also like [reddit stream](http://www.reddit.com/r/CFB/comments/wn9uj/lets_discuss_game_threads_come_fall/c5esw1u) to keep up with comments. ' \
 	+ '\n' + '\n' + '- [Follow @redditCBB](https://twitter.com/redditCBB) on twitter for news, updates, and bad attempts at humor.' \
-	+ '\n' + '\n' + '\n' + '\n' + '**Subscribe to these communities**'  \
-	+ '\n' + '\n' + VisitingSubReddit + ' | ' + HomeSubReddit
+	+ Subreddits
 
-	
-#	print subreddit, '\n', title , '\n' , body
-
-	r = praw.Reddit('GameThreadGenerator')
-	r.set_oauth_app_info(client_id='toi-mfvVqbptkA',client_secret=secret,redirect_uri='http://127.0.0.1:65010/authorize_callback')
-	r.refresh_access_information(token)
-	r.submit(subreddit,title,body)
+	scorescraper.posttoreddit(subreddit,title,body,secret,token)
 
 def postupcoming(url,secret,token):
 	import scorescraper
@@ -139,4 +148,9 @@ def rename_duplicates( old ):
 			seen[x] = 0
 			yield x
 
-
+def posttoreddit(subreddit,title,body,secret,token):
+	import praw
+	r = praw.Reddit('GameThreadGenerator')
+	r.set_oauth_app_info(client_id='toi-mfvVqbptkA',client_secret=secret,redirect_uri='http://127.0.0.1:65010/authorize_callback')
+	r.refresh_access_information(token)
+	r.submit(subreddit,title,body)
