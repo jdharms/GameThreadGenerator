@@ -66,11 +66,9 @@ def getcbbthread(urlname,secret,token):
 	if HomeSubReddit=='' and VisitingSubReddit=='':
 		Subreddits = ''
 	elif HomeSubReddit=='' or VisitingSubReddit=='':
-		Subreddits = '\n' + '\n' + '\n' + '\n' + '**Subscribe to these communities**'  \
-		+ '\n' + '\n' + HomeSubReddit + VisitingSubReddit
+		Subreddits = '\n' + '\n' + '\n' + '\n' + '**Subscribe to these communities**'  + '\n' + '\n' + HomeSubReddit + VisitingSubReddit
 	else:
-		Subreddits = 	+ '\n' + '\n' + '\n' + '\n' + '**Subscribe to these communities**'  \
-		+ '\n' + '\n' + VisitingSubReddit + ' | ' + HomeSubReddit
+		Subreddits = 	+ '\n' + '\n' + '\n' + '\n' + '**Subscribe to these communities**' + '\n' + '\n' + VisitingSubReddit + ' | ' + HomeSubReddit
 	if HomeRadioURL == '':
 		HomeRadioName = ''
 	else:
