@@ -18,6 +18,7 @@ def getgametimes(urlname):
 	return (TimeDeltas2,URLs)	
 	
 def getcbbthread(urlname,secret,token):
+	from datetime import datetime
 	from lxml import html
 	import pandas as pd
 	import requests 
