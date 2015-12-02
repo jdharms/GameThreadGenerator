@@ -77,7 +77,8 @@ def getcbbthread(urlname,secret,token):
 		VisitingRadioName = ''
 	else:
 		VisitingRadioName = VisitingRedditName
-	DateTime = tree.xpath('//li[@class="status"]/text()')[0][12:100]
+	PreTime = tree.xpath('//li[@class="status"]/text()')[0]
+	DateTime = datetime.strptime(PreTime[5:-7], "%b %d %H:%M").strftime("%H:%M") + PreTime[-7:-4] + ' EST'
 	Stadium = tree.xpath('//li[@class="stadium"]/span/text()')[0]
 	try:
 		TV = tree.xpath('//li[@class="left"]/ul/li/text()')[0]
