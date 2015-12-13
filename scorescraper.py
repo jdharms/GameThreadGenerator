@@ -42,9 +42,9 @@ def getcbbthread(urlname,secret,token):
     except:
         visiting_reddit_name = ''
     try:
-        visiting_radio_name = df[df[1]==visiting_yahoo_name].iloc[0][4]
+        visiting_radio_url = df[df[1]==visiting_yahoo_name].iloc[0][4]
     except:
-        visiting_radio_name = ''
+        visiting_radio_url = ''
     try:
         visiting_subreddit = df[df[1]==visiting_yahoo_name].iloc[0][5]
     except:
@@ -58,9 +58,9 @@ def getcbbthread(urlname,secret,token):
     except:
         home_reddit_name = ''
     try:
-        home_radio_name = df[df[1]==home_yahoo_name].iloc[0][4]
+        home_radio_url = df[df[1]==home_yahoo_name].iloc[0][4]
     except:
-        home_radio_name = ''
+        home_radio_url = ''
     try:
         home_subreddit = df[df[1]==home_yahoo_name].iloc[0][5]
     except:
@@ -73,14 +73,14 @@ def getcbbthread(urlname,secret,token):
         subreddits = '\n' + '\n' + '\n' + '\n' + '**Subscribe to these communities**'  + '\n' + '\n' + home_subreddit + visiting_subreddit
     else:
         subreddits =  '\n' + '\n' + '\n' + '\n' + '**Subscribe to these communities**' + '\n' + '\n' + visiting_subreddit + ' | ' + home_subreddit
-    if home_radio_name == '':
+    if home_radio_url == '':
         home_radio_name = ''
     else:
         home_radio_name = home_reddit_name
-    if visiting_radio_name == '':
-        home_radio_name = ''
+    if visiting_radio_url == '':
+        visiting_radio_name = ''
     else:
-        home_radio_name = visiting_reddit_name
+        visiting_radio_name = visiting_reddit_name
     pre_time = tree.xpath('//li[@class="status"]/text()')[0]
     date_time = datetime.strptime(pre_time[5:-7], "%b %d %H:%M").strftime("%-H:%M") + pre_time[-7:-4] + ' EST'
     stadium = tree.xpath('//li[@class="stadium"]/span/text()')[0]
@@ -115,8 +115,8 @@ def getcbbthread(urlname,secret,token):
     + '\n' +  '-----------------------------------------------------------------' + '\n' +  ' ' \
     + '\n' +  '**Television:** ' + '\n' +  tv[4:] + '\n' +  ' ' + '\n' +  '**Streams:** ' \
     + '\n' +  '[IsTheGameOn?](http://isthegameon.com/)' + '\n' +  ' ' \
-    + '\n' +  '**Radio:** ' + '\n' +  '[' + home_radio_name + '](http://tunein.com' + visiting_radio_name + ')' + '\n'  +  ' ' \
-    + '  [' + home_radio_name + '](http://tunein.com' + home_radio_name + ')' + '\n'  +  ' ' \
+    + '\n' +  '**Radio:** ' + '\n' +  '[' + visiting_radio_name + '](http://tunein.com' + visiting_radio_url + ')' + '\n'  +  ' ' \
+    + '  [' + home_radio_name + '](http://tunein.com' + home_radio_url + ')' + '\n'  +  ' ' \
     + '\n' +  '**Preview/Follow:**' + '\n' +  '[Yahoo!](http://sports.yahoo.com'+urlname+')' \
     + '\n' +  ' '  + '\n' +  '**Odds**'  + '\n' +  ' '     \
     + '\n' +  '**Favorite:** ' + odds_favorite + '\n' +  ' '    + '\n' +  '**Game Line:** '+odds_spread \
