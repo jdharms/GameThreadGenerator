@@ -128,7 +128,10 @@ def getcbbthread(urlname,secret,token):
     + '\n' + '\n' + '- Try [Chrome Refresh](https://chrome.google.com/extensions/detail/aifhnlnghddfdaccgbbpbhjfkmncekmn) or Firefoxs [ReloadEvery](https://addons.mozilla.org/en-US/firefox/addon/115/) to auto-refresh this tab.' \
     + '\n' + '\n' + '- You may also like [reddit stream](http://www.reddit.com/r/CFB/comments/wn9uj/lets_discuss_game_threads_come_fall/c5esw1u) to keep up with comments. ' \
     + '\n' + '\n' + '- [Follow @redditCBB](https://twitter.com/redditCBB) on twitter for news, updates, and bad attempts at humor.' \
-    + subreddits
+    + subreddits \
+    + '\n' +  ' ' + '\n' +  '----------------------------------------------------------------- ' \
+    + '\n' + '\n' + '\n' + '\n' + 'Beep Boop. I am a bot. Please message /u/airjesse with any feedback for me.   ' \
+
 
     scorescraper.posttoreddit(subreddit,title,body,secret,token)
         
