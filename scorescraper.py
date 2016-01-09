@@ -29,13 +29,20 @@ def getcbbthread(urlname,secret,token):
     import csv
     import scorescraper
     import OAuth2Util
+    from StringIO import StringIO
     page = requests.get('http://sports.yahoo.com'+urlname)
     page.content2 =  page.content.replace("\\", "")
+    pagerankings = requests.get('http://cbbpoll.com/poll/2016/9')
+    pagerankings.content1 =  pagerankings.content.replace("\\", "")
+    pagerankings.content2 =  pagerankings.content1.replace("|", ",")
     tree=html.fromstring(page.content2) 
+    treerankings=html.fromstring(pagerankings.content2) 
     df1=pd.read_csv('https://raw.githubusercontent.com/airjesse123/GameThreadGenerator/master/TeamLookup.csv', sep=',',header=None)
     df = df1.fillna('')
+    rank = 'rank,reddit_name,name,votes\n'+'\n'.join(treerankings.xpath('//div[@class="modal-body"]/textarea/text()')[0].splitlines()[3:28])
+    rankdf = pd.read_csv(StringIO(rank), dtype=object)  
 
-    visiting_team_name = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="name"]/a/text()')[0]
+    visiting_team_name = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="name"]/a/text()')[0].strip('123456789()')
     visiting_yahoo_name = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="name"]//@href')[0][13:-1]
     try:
         visiting_reddit_name = df[df[1]==visiting_yahoo_name].iloc[0][2]
@@ -49,9 +56,18 @@ def getcbbthread(urlname,secret,token):
         visiting_subreddit = df[df[1]==visiting_yahoo_name].iloc[0][5]
     except:
         visiting_subreddit = ''
+    try:	
+        visiting_rank = rankdf[rankdf.reddit_name == '[](/' + visiting_reddit_name + ')'].iloc[0][0]
+    except:
+        visiting_rank = ''
     visiting_team_record = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="rank"]/text()')[0]
     visiting_team_logo = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="rank"]/text()')[0]
-    home_team_name = tree.xpath('//div[@class="team home"]/div[@class="team-info"]/div[@class="name"]/a/text()')[0]
+    if visiting_radio_url == '':
+        visiting_radio_name = ''
+    else:
+        visiting_radio_name = visiting_reddit_name
+    
+    home_team_name = tree.xpath('//div[@class="team home"]/div[@class="team-info"]/div[@class="name"]/a/text()')[0].strip('123456789()')
     home_yahoo_name = tree.xpath('//div[@class="team home"]/div[@class="team-info"]/div[@class="name"]//@href')[0][13:-1]
     try:
         home_reddit_name = df[df[1]==home_yahoo_name].iloc[0][2]
@@ -65,6 +81,10 @@ def getcbbthread(urlname,secret,token):
         home_subreddit = df[df[1]==home_yahoo_name].iloc[0][5]
     except:
         home_subreddit = ''
+    try:	
+        home_rank = rankdf[rankdf.reddit_name == '[](/' + home_reddit_name + ')'].iloc[0][0]
+    except:
+        home_rank = ''
     home_team_record = tree.xpath('//div[@class="team home"]/div[@class="team-info"]/div[@class="rank"]/text()')[0]
     home_team_logo = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="rank"]/text()')[0]
     if home_subreddit=='' and visiting_subreddit=='':
@@ -77,10 +97,7 @@ def getcbbthread(urlname,secret,token):
         home_radio_name = ''
     else:
         home_radio_name = home_reddit_name
-    if visiting_radio_url == '':
-        visiting_radio_name = ''
-    else:
-        visiting_radio_name = visiting_reddit_name
+
     pre_time = tree.xpath('//li[@class="status"]/text()')[0]
     date_time = datetime.strptime(pre_time[5:-7], "%b %d %H:%M").strftime("%-H:%M") + pre_time[-7:-4] + ' EST'
     stadium = tree.xpath('//li[@class="stadium"]/span/text()')[0]
@@ -103,10 +120,10 @@ def getcbbthread(urlname,secret,token):
 
     subreddit = 'collegebasketball'
 
-    title = '[Game Thread] ' + visiting_team_name + ' at ' + home_team_name + ' (' + date_time + ')'
+    title = '[Game Thread] ' + visiting_rank  + visiting_team_name + ' at ' + home_rank  + home_team_name + ' (' + date_time + ')'
 
     body = '###NCAA Basketball' + '\n' + ' ' + '\n' + '---' \
-    + '\n' + '[](/' + visiting_reddit_name + ') **'+visiting_team_name+'** '+visiting_team_record+' at ' + '[](/' + home_reddit_name + ') **' + home_team_name+'** '+home_team_record   \
+    + '\n' + '[](/' + visiting_reddit_name + ') **' + visiting_rank +visiting_team_name+'** '+visiting_team_record+' at ' + '[](/' + home_reddit_name + ') **'  + home_rank+ home_team_name+'** '+home_team_record   \
     + '\n' + ' ' + '\n' + '**Tipoff:** '+ date_time + '\n' +  ' ' \
     + '\n' +  '**Venue:** '+stadium + '\n' +  ' ' \
     + '\n' +  '-----------------------------------------------------------------' + '\n' +  ' ' \
