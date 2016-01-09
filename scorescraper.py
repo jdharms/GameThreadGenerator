@@ -32,17 +32,24 @@ def getcbbthread(urlname,secret,token):
     from StringIO import StringIO
     page = requests.get('http://sports.yahoo.com'+urlname)
     page.content2 =  page.content.replace("\\", "")
-    pagerankings = requests.get('http://cbbpoll.com/poll/2016/9')
+    tree=html.fromstring(page.content2)     
+    
+    pagerankmain = requests.get('http://cbbpoll.com/')
+    pagerankmain.content2 =  pagerankmain.content.replace("\\", ",")
+    treerankmain=html.fromstring(pagerankmain.content2)
+    currenturl = 'http://cbbpoll.com' + treerankmain.xpath('//div[@class="row"]//@href')[0]
+    
+    pagerankings = requests.get(currenturl)
     pagerankings.content1 =  pagerankings.content.replace("\\", "")
     pagerankings.content2 =  pagerankings.content1.replace("|", ",")
-    tree=html.fromstring(page.content2) 
     treerankings=html.fromstring(pagerankings.content2) 
+
     df1=pd.read_csv('https://raw.githubusercontent.com/airjesse123/GameThreadGenerator/master/TeamLookup.csv', sep=',',header=None)
     df = df1.fillna('')
     rank = 'rank,reddit_name,name,votes\n'+'\n'.join(treerankings.xpath('//div[@class="modal-body"]/textarea/text()')[0].splitlines()[3:28])
     rankdf = pd.read_csv(StringIO(rank), dtype=object)  
 
-    visiting_team_name = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="name"]/a/text()')[0].strip('123456789()')
+    visiting_team_name = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="name"]/a/text()')[0].lstrip('123456789()')
     visiting_yahoo_name = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="name"]//@href')[0][13:-1]
     try:
         visiting_reddit_name = df[df[1]==visiting_yahoo_name].iloc[0][2]
@@ -67,7 +74,7 @@ def getcbbthread(urlname,secret,token):
     else:
         visiting_radio_name = visiting_reddit_name
     
-    home_team_name = tree.xpath('//div[@class="team home"]/div[@class="team-info"]/div[@class="name"]/a/text()')[0].strip('123456789()')
+    home_team_name = tree.xpath('//div[@class="team home"]/div[@class="team-info"]/div[@class="name"]/a/text()')[0].lstrip('123456789()')
     home_yahoo_name = tree.xpath('//div[@class="team home"]/div[@class="team-info"]/div[@class="name"]//@href')[0][13:-1]
     try:
         home_reddit_name = df[df[1]==home_yahoo_name].iloc[0][2]
