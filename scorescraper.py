@@ -49,7 +49,7 @@ def getcbbthread(urlname,secret,token):
     rank = 'rank,reddit_name,name,votes\n'+'\n'.join(treerankings.xpath('//div[@class="modal-body"]/textarea/text()')[0].splitlines()[3:28])
     rankdf = pd.read_csv(StringIO(rank), dtype=object)  
 
-    visiting_team_name = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="name"]/a/text()')[0].lstrip('123456789()')
+    visiting_team_name = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="name"]/a/text()')[0].lstrip('1234567890()')
     visiting_yahoo_name = tree.xpath('//div[@class="team away"]/div[@class="team-info"]/div[@class="name"]//@href')[0][13:-1]
     try:
         visiting_reddit_name = df[df[1]==visiting_yahoo_name].iloc[0][2]
@@ -74,7 +74,7 @@ def getcbbthread(urlname,secret,token):
     else:
         visiting_radio_name = visiting_reddit_name
     
-    home_team_name = tree.xpath('//div[@class="team home"]/div[@class="team-info"]/div[@class="name"]/a/text()')[0].lstrip('123456789()')
+    home_team_name = tree.xpath('//div[@class="team home"]/div[@class="team-info"]/div[@class="name"]/a/text()')[0].lstrip('1234567890()')
     home_yahoo_name = tree.xpath('//div[@class="team home"]/div[@class="team-info"]/div[@class="name"]//@href')[0][13:-1]
     try:
         home_reddit_name = df[df[1]==home_yahoo_name].iloc[0][2]
