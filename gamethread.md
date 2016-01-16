@@ -22,6 +22,7 @@
        rank: str,
        record: str,
        radio: str,
+       subreddit: str,
    }
  }
  #}###NCAA Basketball
