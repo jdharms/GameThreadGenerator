@@ -1,48 +1,52 @@
+from lxml import html
+import requests
+from datetime import datetime, timedelta
+import pytz
+import praw
+
 if __name__ == "__main__":
     main()
 
-def getgametimes(urlname):
-    from lxml import html
-    import requests 
-    import scorescraper
-    from datetime import datetime, timedelta
-    page = requests.get(urlname)
-    page.content2 =  page.content.replace("\\", "")
-    tree=html.fromstring(page.content2) 
-    gametime = tree.xpath('//tr[@class="game pre link"]//span[@class="time"]/text()')
-    if not gametime:
-        gametime = tree.xpath('//span[@class="time"]/text()')
-    gametime2 = [x[0:-4] for x in gametime]
-    URLs = tree.xpath('//tr[@class="game pre link"]//td[@class="score"]//@href')
-    if not URLs:
-        URLs = tree.xpath('//td[@class="score"]//@href')
-    time_deltas = [(datetime.strptime(x, '%I:%M %p')-datetime.utcnow()+timedelta(hours=5)).seconds/60 for x in gametime2]
-    time_deltas2 = list(scorescraper.rename_duplicates(time_deltas))
-    return (time_deltas2,URLs)    
-    
+
+def get_game_times(url_name):
+    page = requests.get(url_name)
+    page.content2 = page.content.replace("\\", "")
+    tree = html.fromstring(page.content2)
+    game_times = (
+        tree.xpath('//tr[@class="game pre link"]//span[@class="time"]/text()') or
+        tree.xpath('//span[@class="time"]/text()')
+    )
+
+    game_times = [x[0:-4] for x in game_times]
+    URLs = (
+        tree.xpath('//tr[@class="game pre link"]//td[@class="score"]//@href') or
+        tree.xpath('//td[@class="score"]//@href')
+    )
+
+    eastern = pytz.timezone("US/Eastern")
+    today = datetime.today()
+
+    game_times = [datetime.strptime(time, '%I:%M %p').
+                      replace(year=today.year, month=today.month, day=today.day, tzinfo=eastern)
+                  for time in game_times]
+
+    return game_times, URLs
+
+
 def getcbbthread(urlname,secret,token):
-    from datetime import datetime
-    from lxml import html
-    import pandas as pd
-    import requests 
-    import requests.auth
-    import csv
-    import scorescraper
-    import OAuth2Util
-    from StringIO import StringIO
     page = requests.get('http://sports.yahoo.com'+urlname)
-    page.content2 =  page.content.replace("\\", "")
-    tree=html.fromstring(page.content2)     
+    page.content2 = page.content.replace("\\", "")
+    tree = html.fromstring(page.content2)
     
     pagerankmain = requests.get('http://cbbpoll.com/')
-    pagerankmain.content2 =  pagerankmain.content.replace("\\", ",")
-    treerankmain=html.fromstring(pagerankmain.content2)
+    pagerankmain.content2 = pagerankmain.content.replace("\\", ",")
+    treerankmain = html.fromstring(pagerankmain.content2)
     currenturl = 'http://cbbpoll.com' + treerankmain.xpath('//div[@class="row"]//@href')[0]
     
     pagerankings = requests.get(currenturl)
-    pagerankings.content1 =  pagerankings.content.replace("\\", "")
-    pagerankings.content2 =  pagerankings.content1.replace("|", ",")
-    treerankings=html.fromstring(pagerankings.content2) 
+    pagerankings.content1 = pagerankings.content.replace("\\", "")
+    pagerankings.content2 = pagerankings.content1.replace("|", ",")
+    treerankings = html.fromstring(pagerankings.content2)
 
     df1=pd.read_csv('https://raw.githubusercontent.com/airjesse123/GameThreadGenerator/master/TeamLookup.csv', sep=',',header=None)
     df = df1.fillna('')
@@ -157,30 +161,22 @@ def getcbbthread(urlname,secret,token):
     + '\n' + '\n' + '\n' + '\n' + 'Beep Boop. I am a bot. Please message /u/airjesse with any feedback for me.   ' \
 
 
-    scorescraper.posttoreddit(subreddit,title,body,secret,token)
-        
-def rename_duplicates( old ):
-    seen = {}
-    for x in old:
-        if x in seen:
-            seen[x] += 1
-            yield x + 11
-        else:
-            seen[x] = 0
-            yield x
+    post_to_reddit(subreddit,title,body,secret,token)
 
-def posttoreddit(subreddit,title,body,secret,token):
-    import praw
+
+def post_to_reddit(subreddit,title,body,secret,token):
     r = praw.Reddit('GameThreadGenerator')
     r.set_oauth_app_info(client_id='toi-mfvVqbptkA',client_secret=secret,redirect_uri='http://127.0.0.1:65010/authorize_callback')
     r.refresh_access_information(token)
     r.submit(subreddit,title,body,send_replies='false')
 
+
 def main(url,secret,token):
-    import scorescraper
-    import pandas as pd
-    (timedeltas,urls) = scorescraper.getgametimes(url)
-    df = pd.DataFrame({'timedeltas': timedeltas, 'urls': urls})
-    df2 = df[df['timedeltas'].between(50,59)]
-    for index, row in df2.iterrows():
-        scorescraper.getcbbthread(row['urls'],secret,token)
+    game_times, urls = get_game_times(url)
+    now = datetime.now(pytz.utc)
+    earliest = now + timedelta(minutes=50)
+    latest = now + timedelta(minutes=59)
+
+    for time, url in zip(game_times, urls):
+        if earliest < time < latest:
+            getcbbthread(url, secret, token)
