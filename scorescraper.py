@@ -4,9 +4,6 @@ from datetime import datetime, timedelta
 import pytz
 import praw
 
-if __name__ == "__main__":
-    main()
-
 
 def get_game_times(url_name):
     page = requests.get(url_name)
@@ -181,3 +178,7 @@ def main(url,secret,token):
         if earliest < time < latest:
             title, body = getcbbthread(url)
             post_to_reddit(subreddit, title, body, secret, token)
+
+
+if __name__ == "__main__":
+    main()
