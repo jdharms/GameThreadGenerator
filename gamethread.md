@@ -51,7 +51,7 @@
 {% if away.subreddit or home.subreddit %}
 **Subscribe to these communities**
 
-{{ away.subreddit }} {% if away.subreddit and home.subreddit %}|{% endif %} {{ home.subreddit }}
+{{ away.subreddit }}{% if away.subreddit and home.subreddit %} | {% endif %}{{ home.subreddit }}
 {% endif %}
 
 -----------------------------------------------------------------
