@@ -33,8 +33,8 @@ def get_game_times(url_name):
     return game_times, URLs
 
 
-def getcbbthread(urlname,secret,token):
-    page = requests.get('http://sports.yahoo.com'+urlname)
+def getcbbthread(url):
+    page = requests.get('http://sports.yahoo.com'+url)
     page.content2 = page.content.replace("\\", "")
     tree = html.fromstring(page.content2)
     
@@ -48,7 +48,7 @@ def getcbbthread(urlname,secret,token):
     pagerankings.content2 = pagerankings.content1.replace("|", ",")
     treerankings = html.fromstring(pagerankings.content2)
 
-    df1=pd.read_csv('https://raw.githubusercontent.com/airjesse123/GameThreadGenerator/master/TeamLookup.csv', sep=',',header=None)
+    df1 = pd.read_csv('https://raw.githubusercontent.com/airjesse123/GameThreadGenerator/master/TeamLookup.csv', sep=',',header=None)
     df = df1.fillna('')
     rank = 'rank,reddit_name,name,votes\n'+'\n'.join(treerankings.xpath('//div[@class="modal-body"]/textarea/text()')[0].splitlines()[3:28])
     rankdf = pd.read_csv(StringIO(rank), dtype=object)  
@@ -129,8 +129,7 @@ def getcbbthread(urlname,secret,token):
     except:
         odds_ou = 'NA'
 
-    subreddit = 'collegebasketball'
-
+    # Move title into first line of gamethread.md and slice out after render?
     title = '[Game Thread] ' + visiting_rank  + visiting_team_name + ' at ' + home_rank  + home_team_name + ' (' + date_time + ')'
 
     body = '###NCAA Basketball' + '\n' + ' ' + '\n' + '---' \
@@ -145,7 +144,7 @@ def getcbbthread(urlname,secret,token):
     + '\n' +  '[IsTheGameOn?](http://isthegameon.com/)' + '\n' +  ' ' \
     + '\n' +  '**Radio:** ' + '\n' +  '[' + visiting_radio_name + '](http://tunein.com' + visiting_radio_url + ')' + '\n'  +  ' ' \
     + '  [' + home_radio_name + '](http://tunein.com' + home_radio_url + ')' + '\n'  +  ' ' \
-    + '\n' +  '**Preview/Follow:**' + '\n' +  '[Yahoo!](http://sports.yahoo.com'+urlname+')' \
+    + '\n' +  '**Preview/Follow:**' + '\n' +  '[Yahoo!](http://sports.yahoo.com'+url+')' \
     + '\n' +  ' '  + '\n' +  '**Odds**'  + '\n' +  ' '     \
     + '\n' +  '**Favorite:** ' + odds_favorite + '\n' +  ' '    + '\n' +  '**Game Line:** '+odds_spread \
     + '\n' +  ' ' + '\n' +  '**O/U:** ' + odds_ou \
@@ -160,8 +159,7 @@ def getcbbthread(urlname,secret,token):
     + '\n' +  ' ' + '\n' +  '----------------------------------------------------------------- ' \
     + '\n' + '\n' + '\n' + '\n' + 'Beep Boop. I am a bot. Please message /u/airjesse with any feedback for me.   ' \
 
-
-    post_to_reddit(subreddit,title,body,secret,token)
+    return title, body
 
 
 def post_to_reddit(subreddit,title,body,secret,token):
@@ -172,6 +170,8 @@ def post_to_reddit(subreddit,title,body,secret,token):
 
 
 def main(url,secret,token):
+    subreddit = 'collegebasketball'
+
     game_times, urls = get_game_times(url)
     now = datetime.now(pytz.utc)
     earliest = now + timedelta(minutes=50)
@@ -179,4 +179,5 @@ def main(url,secret,token):
 
     for time, url in zip(game_times, urls):
         if earliest < time < latest:
-            getcbbthread(url, secret, token)
+            title, body = getcbbthread(url)
+            post_to_reddit(subreddit, title, body, secret, token)

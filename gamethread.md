@@ -1,4 +1,30 @@
-###NCAA Basketball
+{#
+ Notes:
+ Expected context:
+
+ { tv: str,
+   tipoff_time: str,
+   venue: str,
+   url: str,
+   favorite: str,
+   spread: str,
+   over_under: str,
+   away: {
+       name: str,
+       reddit_name: str,
+       rank: str,
+       record: str,
+       radio: str,
+   }
+   home: {
+       name: str,
+       reddit_name: str,
+       rank: str,
+       record: str,
+       radio: str,
+   }
+ }
+ #}###NCAA Basketball
 
 ---
 [](/{{ away.reddit_name }}) **{{ away.rank }} {{ away.name }}** {{ away.record }} at [](/{{ home.reddit_name }}) **{{ home.rank }}{{ home.name }}** {{ home.record }}
